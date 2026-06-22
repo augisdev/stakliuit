@@ -2,7 +2,7 @@
   "name": "Stalkių IT numeriai",
   "short_name": "Staklių IT",
   "description": "Stalkių IT numerių atmintinė",
-  "start_url": "/",
+  "start_url": "/stakliuit/",
   "display": "standalone",
   "background_color": "#F5F0E8",
   "theme_color": "#F5F0E8",
