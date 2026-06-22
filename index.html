@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Staklių IT">
+<meta name="theme-color" content="#F5F0E8">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+<title>Stalkių IT numeriai</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#F5F0E8;
+  --card:#FFFFFF;
+  --border:#E0D8CC;
+  --text:#1A1A1A;
+  --muted:#6B6560;
+  --radius:14px;
+  --safe-top:env(safe-area-inset-top);
+  --safe-bottom:env(safe-area-inset-bottom);
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  padding-bottom:calc(3rem + var(--safe-bottom));
+}
+
+header{
+  background:var(--bg);
+  padding:calc(0.9rem + var(--safe-top)) 1.25rem 0.7rem;
+  display:flex;align-items:center;justify-content:center;
+  position:sticky;top:0;z-index:100;
+  border-bottom:0.5px solid var(--border);
+}
+#headerTitle{
+  font-size:21px;font-weight:700;
+  font-family:Georgia,serif;letter-spacing:-0.3px;
+}
+
+.btn-settings{
+  position:absolute;right:1.25rem;
+  top:calc(0.75rem + var(--safe-top));
+  background:none;border:none;cursor:pointer;
+  width:40px;height:40px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:50%;
+}
+.btn-settings:active{background:rgba(0,0,0,0.08)}
+.btn-settings svg{width:22px;height:22px;stroke:var(--muted);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.btn-settings.active svg{stroke:#C94A1A}
+
+.edit-banner{
+  display:none;
+  background:#FFF8F0;border-bottom:0.5px solid #F0D8C0;
+  padding:7px 1.25rem;
+  font-size:12px;color:#C94A1A;
+  text-align:center;font-weight:500;
+}
+.edit-banner.show{display:block}
+
+main{padding:1rem 1rem 0}
+#footerSec{padding:0 1rem}
+
+.section{
+  background:var(--card);
+  border:0.5px solid var(--border);
+  border-radius:var(--radius);
+  margin-bottom:1rem;overflow:hidden;
+}
+
+.sec-header{
+  display:flex;align-items:center;
+  padding:10px 14px 9px;
+  border-bottom:0.5px solid var(--border);gap:8px;
+}
+.sec-title-display{
+  flex:1;font-size:15px;font-weight:700;
+  color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.8px;
+}
+.sec-title-input{
+  flex:1;font-size:15px;font-weight:700;
+  color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;
+  background:none;border:none;border-bottom:1px dashed var(--border);
+  outline:none;font-family:inherit;padding:1px 0;
+}
+.sec-title-input:focus{color:var(--text)}
+.btn-del-sec{
+  display:none;background:none;border:none;cursor:pointer;
+  color:#E53935;font-size:22px;padding:0 4px;line-height:1;
+}
+.edit-mode .btn-del-sec{display:flex;align-items:center}
+
+.font-group{display:flex;gap:2px;flex-shrink:0}
+.font-btn{
+  background:none;border:none;cursor:pointer;font-family:inherit;
+  font-size:13px;color:var(--muted);padding:2px 6px 3px;
+  border-bottom:2px solid transparent;line-height:1.2;
+}
+.font-btn.active{color:var(--text);font-weight:700;border-bottom-color:#C94A1A}
+
+.row{
+  display:flex;align-items:center;
+  padding:11px 14px;
+  border-bottom:0.5px solid var(--border);gap:8px;
+}
+.row:last-child{border-bottom:none}
+
+.dots{display:none;flex-direction:column;gap:5px;flex-shrink:0}
+.edit-mode .dots{display:flex}
+.dot{
+  width:11px;height:11px;border-radius:50%;
+  cursor:pointer;border:1.5px solid rgba(0,0,0,0.12);
+  flex-shrink:0;transition:transform 0.12s;
+}
+.dot:active{transform:scale(1.35)}
+
+.row-name{
+  flex:1;font-size:16px;font-weight:600;
+  outline:none;font-family:inherit;min-width:0;
+  overflow-wrap:break-word;word-break:break-word;white-space:pre-wrap;
+  min-height:1.2em;
+}
+.row-name[contenteditable="false"]{pointer-events:none}
+.row-name[contenteditable="true"]:focus{border-bottom:1px dashed var(--border)}
+
+.row-it{
+  font-size:16px;font-weight:600;
+  outline:none;font-family:inherit;
+  min-width:84px;text-align:right;flex-shrink:0;
+  overflow-wrap:break-word;word-break:break-word;white-space:pre-wrap;
+  min-height:1.2em;
+}
+.row-it[contenteditable="false"]{pointer-events:none}
+.row-it[contenteditable="true"]:focus{border-bottom:1px dashed var(--border)}
+
+.btn-del-row{
+  display:none;background:none;border:none;cursor:pointer;
+  color:#E53935;font-size:22px;padding:0 2px;line-height:1;flex-shrink:0;
+}
+.edit-mode .btn-del-row{display:flex;align-items:center}
+
+.btn-add-row{
+  display:none;width:100%;background:none;border:none;
+  padding:10px 14px;text-align:left;
+  font-size:14px;color:var(--muted);
+  cursor:pointer;font-family:inherit;gap:6px;align-items:center;
+}
+.btn-add-row:active{background:rgba(0,0,0,0.04)}
+.edit-mode .btn-add-row{display:flex}
+
+.btn-add-section-el{
+  width:100%;background:none;
+  border:0.5px dashed var(--border);
+  border-radius:var(--radius);
+  padding:13px;font-size:14px;color:var(--muted);
+  cursor:pointer;font-family:inherit;
+  gap:6px;align-items:center;justify-content:center;
+  margin-bottom:1rem;display:none;
+}
+.btn-add-section-el:active{background:rgba(0,0,0,0.04)}
+.edit-mode .btn-add-section-el{display:flex}
+
+/* Overlays */
+.overlay{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,0.32);
+  align-items:flex-end;justify-content:center;
+}
+.overlay.show{display:flex}
+.sheet{
+  background:var(--card);
+  border-radius:20px 20px 0 0;
+  padding:1.25rem 1.5rem calc(1.5rem + var(--safe-bottom));
+  width:100%;max-width:480px;
+}
+.sheet h3{
+  font-size:12px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.7px;
+  text-align:center;margin-bottom:1rem;
+}
+.color-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  gap:14px;margin-bottom:1rem;
+}
+.swatch{
+  width:100%;aspect-ratio:1;border-radius:50%;
+  border:2.5px solid transparent;cursor:pointer;
+  transition:transform 0.12s;
+}
+.swatch:active{transform:scale(0.88)}
+.swatch.selected{border-color:#1A1A1A}
+.btn-cancel{
+  width:100%;padding:13px;
+  background:rgba(0,0,0,0.06);border:none;border-radius:10px;
+  font-size:16px;font-weight:500;cursor:pointer;
+  font-family:inherit;color:var(--text);
+}
+.btn-cancel:active{background:rgba(0,0,0,0.12)}
+
+/* Header edit sheet */
+.hdr-row{
+  display:flex;align-items:center;
+  padding:11px 0;border-bottom:0.5px solid var(--border);gap:10px;
+}
+.hdr-row:last-of-type{border-bottom:none;margin-bottom:1rem}
+.hdr-label{font-size:13px;color:var(--muted);width:90px;flex-shrink:0}
+.hdr-input{
+  flex:1;font-size:17px;font-weight:700;
+  background:none;border:none;border-bottom:1px dashed var(--border);
+  outline:none;font-family:Georgia,serif;padding:2px 0;color:var(--text);
+}
+.hdr-dot{
+  width:28px;height:28px;border-radius:50%;
+  cursor:pointer;border:2px solid rgba(0,0,0,0.12);
+  flex-shrink:0;transition:transform 0.12s;
+}
+.hdr-dot:active{transform:scale(0.88)}
+.hdr-preview{
+  font-family:Georgia,serif;font-size:17px;font-weight:700;
+  min-width:28px;
+}
+.bg-row{align-items:flex-start}
+.bg-grid{display:flex;flex-wrap:wrap;gap:10px;flex:1}
+.bg-swatch{
+  width:34px;height:34px;border-radius:50%;
+  border:2px solid var(--border);cursor:pointer;
+  transition:transform 0.12s;flex-shrink:0;
+}
+.bg-swatch:active{transform:scale(0.88)}
+.bg-swatch.selected{border-color:#1A1A1A;border-width:3px}
+
+/* Export bar */
+.export-bar{
+  display:none;position:fixed;
+  bottom:calc(1rem + var(--safe-bottom));
+  left:50%;transform:translateX(-50%);
+  background:var(--card);border:0.5px solid var(--border);
+  border-radius:30px;padding:8px 20px;gap:16px;
+  box-shadow:0 2px 16px rgba(0,0,0,0.13);
+  z-index:100;white-space:nowrap;
+}
+.export-bar.show{display:flex}
+.export-bar button{
+  background:none;border:none;font-size:12px;color:var(--muted);
+  cursor:pointer;font-family:inherit;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:4px 8px;border-radius:8px;
+}
+.export-bar button:active{background:rgba(0,0,0,0.06)}
+.export-bar button svg{width:20px;height:20px;stroke:#C94A1A;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+input[type=file]{display:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div id="headerTitle"></div>
+  <button class="btn-settings" id="btnSettings" onclick="toggleEdit()" aria-label="Nustatymai">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
+</header>
+
+<div class="edit-banner" id="editBanner">Redagavimo režimas įjungtas</div>
+<main id="main"></main>
+<div id="footerSec"></div>
+
+<div class="export-bar" id="exportBar">
+  <button onclick="exportData()">
+    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Eksportuoti
+  </button>
+  <button onclick="document.getElementById('fileInput').click()">
+    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    Importuoti
+  </button>
+</div>
+<input type="file" id="fileInput" accept=".json" onchange="importData(event)">
+
+<!-- Row color picker -->
+<div class="overlay" id="colorOverlay" onclick="overlayClick(event,'colorOverlay')">
+  <div class="sheet">
+    <h3 id="colorSheetTitle">Spalva</h3>
+    <div class="color-grid" id="colorGrid"></div>
+    <button class="btn-cancel" onclick="closeOverlay('colorOverlay')">Atšaukti</button>
+  </div>
+</div>
+
+<!-- Header edit sheet -->
+<div class="overlay" id="hdrOverlay" onclick="overlayClick(event,'hdrOverlay')">
+  <div class="sheet">
+    <h3>Antraštės nustatymai</h3>
+    <div class="hdr-row">
+      <span class="hdr-label">1 žodis</span>
+      <input class="hdr-input" id="hdrW1" maxlength="10" oninput="hdrPreview()">
+      <div class="hdr-dot" id="hdrDot1" onclick="openHdrColor(1)"></div>
+      <span class="hdr-preview" id="hdrPrev1"></span>
+    </div>
+    <div class="hdr-row">
+      <span class="hdr-label">2 žodis</span>
+      <input class="hdr-input" id="hdrW2" maxlength="10" oninput="hdrPreview()">
+      <div class="hdr-dot" id="hdrDot2" onclick="openHdrColor(2)"></div>
+      <span class="hdr-preview" id="hdrPrev2"></span>
+    </div>
+    <div class="hdr-row">
+      <span class="hdr-label">Apatinis</span>
+      <input class="hdr-input" id="hdrW3" maxlength="15" oninput="hdrPreview()">
+      <div class="hdr-dot" id="hdrDot3" onclick="openHdrColor(3)"></div>
+      <span class="hdr-preview" id="hdrPrev3" style="font-size:13px"></span>
+    </div>
+    <div class="hdr-row bg-row">
+      <span class="hdr-label">Fonas</span>
+      <div class="bg-grid" id="bgGrid"></div>
+    </div>
+    <button class="btn-cancel" onclick="saveHdr()">Išsaugoti</button>
+  </div>
+</div>
+
+<!-- Header color picker -->
+<div class="overlay" id="hdrColorOverlay" onclick="overlayClick(event,'hdrColorOverlay')">
+  <div class="sheet">
+    <h3>Spalva</h3>
+    <div class="color-grid" id="hdrColorGrid"></div>
+    <button class="btn-cancel" onclick="closeOverlay('hdrColorOverlay')">Atšaukti</button>
+  </div>
+</div>
+
+<script>
+const COLORS=[
+  {n:'Juoda',h:'#1A1A1A'},
+  {n:'Pilka',h:'#546E7A'},
+  {n:'Raudona',h:'#E53935'},
+  {n:'Oranžinė',h:'#C94A1A'},
+  {n:'Geltona',h:'#F9A825'},
+  {n:'Žalia',h:'#2E7D32'},
+  {n:'Tamsiai žalia',h:'#00695C'},
+  {n:'Mėlyna',h:'#1565C0'},
+  {n:'Tamsiai mėlyna',h:'#0D47A1'},
+  {n:'Violetinė',h:'#6A1B9A'},
+];
+
+const BG_COLORS=[
+  {n:'Kreminė',h:'#F5F0E8'},
+  {n:'Balta',h:'#FFFFFF'},
+  {n:'Šviesiai pilka',h:'#F2F2F7'},
+  {n:'Šviesiai mėlyna',h:'#EFF6FF'},
+  {n:'Šviesiai žalia',h:'#F0FDF4'},
+  {n:'Šviesiai geltona',h:'#FEFCE8'},
+  {n:'Šviesiai rožinė',h:'#FFF1F2'},
+];
+const DEFAULT_BG='#F5F0E8';
+
+const DEFAULT={
+  header:{w1:'IT',w2:'',w3:'staklių',c1:'#2E7D32',c2:'#1565C0',c3:'#C94A1A',bg:'#F5F0E8'},
+  sections:[
+    {id:1,title:'Pagrindiniai',footer:false,fontSize:16,rows:[
+      {id:1,name:'H50',it:'IT - 074',cN:'#1A1A1A',cI:'#C94A1A'},
+      {id:2,name:'H350',it:'IT - 125',cN:'#1A1A1A',cI:'#C94A1A'},
+      {id:3,name:'H500',it:'IT - 098',cN:'#1A1A1A',cI:'#C94A1A'},
+      {id:4,name:'Bacci',it:'IT - 132',cN:'#1A1A1A',cI:'#C94A1A'},
+      {id:5,name:'Bacci',it:'IT - 133',cN:'#1A1A1A',cI:'#C94A1A'},
+      {id:6,name:'Morbidelli',it:'IT - 060',cN:'#1A1A1A',cI:'#C94A1A'},
+      {id:7,name:'Lorench',it:'IT - 128',cN:'#1A1A1A',cI:'#C94A1A'},
+    ]},
+    {id:2,title:'Papildomi',footer:false,fontSize:16,rows:[
+      {id:8,name:'Fingeris',it:'IT - 051',cN:'#1A1A1A',cI:'#C94A1A'},
+      {id:9,name:'Morbio detalių pakėlėjas',it:'IT - 121',cN:'#1A1A1A',cI:'#C94A1A'},
+    ]},
+    {id:3,title:'',footer:true,fontSize:16,rows:[
+      {id:10,name:'GRIGIO (formatinės ir kantavimas pakabinta ant formatinių)',it:'IT - 002',cN:'#1A1A1A',cI:'#C94A1A'},
+    ]},
+  ]
+};
+
+let data,editMode=false,nextId=200;
+let colorTarget=null,hdrColorTarget=null;
+
+function loadData(){
+  try{const s=localStorage.getItem('stalkiai4');return s?JSON.parse(s):JSON.parse(JSON.stringify(DEFAULT));}
+  catch{return JSON.parse(JSON.stringify(DEFAULT));}
+}
+data=loadData();
+
+function save(){localStorage.setItem('stalkiai4',JSON.stringify(data));}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+
+function applyBg(hex){
+  var c=hex||DEFAULT_BG;
+  document.documentElement.style.setProperty('--bg',c);
+  var m=document.querySelector('meta[name="theme-color"]');
+  if(m)m.setAttribute('content',c);
+}
+
+function buildBgGrid(){
+  var cur=(data.header.bg)||DEFAULT_BG;
+  var grid=document.getElementById('bgGrid');grid.innerHTML='';
+  BG_COLORS.forEach(function(c){
+    var sw=document.createElement('button');
+    sw.className='bg-swatch'+(c.h.toUpperCase()===cur.toUpperCase()?' selected':'');
+    sw.style.background=c.h;sw.title=c.n;
+    sw.onclick=function(){
+      data.header.bg=c.h;save();applyBg(c.h);buildBgGrid();
+    };
+    grid.appendChild(sw);
+  });
+}
+
+function renderHeader(){
+  const h=data.header;
+  applyBg(h.bg);
+  const el=document.getElementById('headerTitle');
+  let html='';
+  if(h.w1) html+=`<span style="color:${h.c1}">${esc(h.w1)}</span>`;
+  if(h.w2) html+=`<span style="color:${h.c2}">${esc(h.w2)}</span>`;
+  if(h.w3) html+=`<span style="color:${h.c3};font-size:14px;font-weight:600;margin-left:5px">${esc(h.w3)}</span>`;
+  el.innerHTML=html||'IT staklių';
+  el.style.cursor=editMode?'pointer':'default';
+  el.onclick=editMode?openHdrSheet:null;
+}
+
+function buildSection(sec,isFooter){
+  const wrap=document.createElement('div');
+  wrap.className='section'+(isFooter?' footer-sec':'');
+
+  if(editMode){
+    const hdr=document.createElement('div');
+    hdr.className='sec-header';
+    if(!isFooter){
+      if(sec.title.trim()){
+        const sp=document.createElement('span');
+        sp.className='sec-title-display';
+        sp.textContent=sec.title;
+        hdr.appendChild(sp);
+      }
+      const ti=document.createElement('input');
+      ti.className='sec-title-input';
+      ti.value=sec.title;
+      ti.placeholder='Sekcijos pavadinimas...';
+      ti.addEventListener('input',e=>{sec.title=e.target.value;save();});
+      hdr.appendChild(ti);
+    } else {
+      const sp=document.createElement('span');
+      sp.style.flex='1';
+      hdr.appendChild(sp);
+    }
+    const fontGroup=document.createElement('div');
+    fontGroup.className='font-group';
+    [['S',13],['M',16],['L',19]].forEach(function(pair){
+      var fb=document.createElement('button');
+      fb.className='font-btn'+(((sec.fontSize||16)===pair[1])?' active':'');
+      fb.textContent=pair[0];
+      fb.onclick=function(){sec.fontSize=pair[1];save();render();};
+      fontGroup.appendChild(fb);
+    });
+    hdr.appendChild(fontGroup);
+    if(!isFooter){
+      const db=document.createElement('button');
+      db.className='btn-del-sec';
+      db.innerHTML='&times;';
+      db.onclick=()=>{if(confirm('Ištrinti sekciją "'+(sec.title||'be pavadinimo')+'"?')){data.sections=data.sections.filter(s=>s.id!==sec.id);save();render();}};
+      hdr.appendChild(db);
+    }
+    wrap.appendChild(hdr);
+  } else if(!isFooter && sec.title.trim()){
+    const hdr=document.createElement('div');
+    hdr.className='sec-header';
+    const sp=document.createElement('span');
+    sp.className='sec-title-display';
+    sp.textContent=sec.title;
+    hdr.appendChild(sp);
+    wrap.appendChild(hdr);
+  }
+
+  sec.rows.forEach(function(row){
+    const rowEl=document.createElement('div');
+    rowEl.className='row';
+
+    const dots=document.createElement('div');
+    dots.className='dots';
+    const d1=document.createElement('div');
+    d1.className='dot';d1.style.background=row.cN||'#1A1A1A';
+    d1.title='Pavadinimo spalva';
+    d1.onclick=function(){openColorPicker(sec.id,row.id,'cN',row.cN);};
+    const d2=document.createElement('div');
+    d2.className='dot';d2.style.background=row.cI||'#C94A1A';
+    d2.title='IT numerio spalva';
+    d2.onclick=function(){openColorPicker(sec.id,row.id,'cI',row.cI);};
+    dots.appendChild(d1);dots.appendChild(d2);
+    rowEl.appendChild(dots);
+
+    var fs=(sec.fontSize||16)+'px';
+
+    const nm=document.createElement('div');
+    nm.className='row-name';nm.textContent=row.name;
+    nm.setAttribute('contenteditable',editMode?'true':'false');
+    nm.style.color=row.cN||'#1A1A1A';
+    nm.style.fontSize=fs;
+    nm.addEventListener('blur',function(){row.name=nm.textContent;save();});
+    rowEl.appendChild(nm);
+
+    const it=document.createElement('div');
+    it.className='row-it';it.textContent=row.it;
+    it.setAttribute('contenteditable',editMode?'true':'false');
+    it.style.color=row.cI||'#C94A1A';
+    it.style.fontSize=fs;
+    it.addEventListener('blur',function(){row.it=it.textContent;save();});
+    rowEl.appendChild(it);
+
+    const db=document.createElement('button');
+    db.className='btn-del-row';db.innerHTML='&times;';
+    db.onclick=function(){sec.rows=sec.rows.filter(function(r){return r.id!==row.id;});save();render();};
+    rowEl.appendChild(db);
+    wrap.appendChild(rowEl);
+  });
+
+  const addR=document.createElement('button');
+  addR.className='btn-add-row';
+  addR.textContent='＋  Pridėti eilutę';
+  addR.onclick=function(){
+    sec.rows.push({id:++nextId,name:'',it:'IT - ',cN:'#1A1A1A',cI:'#C94A1A'});
+    save();render();
+    setTimeout(function(){var ins=document.querySelectorAll('.row-name');if(ins.length)ins[ins.length-1].focus();},60);
+  };
+  wrap.appendChild(addR);
+  return wrap;
+}
+
+function render(){
+  renderHeader();
+  var main=document.getElementById('main');
+  var footerEl=document.getElementById('footerSec');
+  main.innerHTML='';
+  footerEl.innerHTML='';
+
+  var normal=data.sections.filter(function(s){return !s.footer;});
+  var footer=data.sections.filter(function(s){return s.footer;});
+
+  normal.forEach(function(sec){main.appendChild(buildSection(sec,false));});
+
+  var addBtn=document.createElement('button');
+  addBtn.className='btn-add-section-el';
+  addBtn.textContent='＋  Pridėti sekciją';
+  addBtn.onclick=function(){
+    data.sections.splice(data.sections.length - (footer.length), 0, {id:++nextId,title:'',footer:false,fontSize:16,rows:[]});
+    save();render();
+  };
+  main.appendChild(addBtn);
+
+  footer.forEach(function(sec){footerEl.appendChild(buildSection(sec,true));});
+
+  document.getElementById('btnSettings').classList.toggle('active',editMode);
+  document.getElementById('editBanner').classList.toggle('show',editMode);
+  document.getElementById('exportBar').classList.toggle('show',editMode);
+  document.body.classList.toggle('edit-mode',editMode);
+}
+
+function toggleEdit(){editMode=!editMode;render();}
+
+function openColorPicker(secId,rowId,field,current){
+  colorTarget={secId:secId,rowId:rowId,field:field};
+  document.getElementById('colorSheetTitle').textContent=field==='cN'?'PAVADINIMO SPALVA':'IT NUMERIO SPALVA';
+  var grid=document.getElementById('colorGrid');grid.innerHTML='';
+  COLORS.forEach(function(c){
+    var sw=document.createElement('button');
+    sw.className='swatch'+(c.h===current?' selected':'');
+    sw.style.background=c.h;sw.title=c.n;
+    sw.onclick=function(){applyColor(c.h);};
+    grid.appendChild(sw);
+  });
+  document.getElementById('colorOverlay').classList.add('show');
+}
+
+function applyColor(hex){
+  if(!colorTarget)return;
+  var sec=data.sections.find(function(s){return s.id===colorTarget.secId;});
+  var row=sec&&sec.rows.find(function(r){return r.id===colorTarget.rowId;});
+  if(row){row[colorTarget.field]=hex;save();}
+  closeOverlay('colorOverlay');colorTarget=null;render();
+}
+
+function openHdrSheet(){
+  var h=data.header;
+  document.getElementById('hdrW1').value=h.w1||'';
+  document.getElementById('hdrW2').value=h.w2||'';
+  document.getElementById('hdrW3').value=h.w3||'';
+  ['1','2','3'].forEach(function(i){
+    var ci=h['c'+i];
+    document.getElementById('hdrDot'+i).style.background=ci;
+    var pr=document.getElementById('hdrPrev'+i);
+    pr.style.color=ci;
+  });
+  hdrPreview();
+  buildBgGrid();
+  document.getElementById('hdrOverlay').classList.add('show');
+}
+
+function hdrPreview(){
+  var h=data.header;
+  var vals=[
+    document.getElementById('hdrW1').value,
+    document.getElementById('hdrW2').value,
+    document.getElementById('hdrW3').value
+  ];
+  ['1','2','3'].forEach(function(i){
+    var pr=document.getElementById('hdrPrev'+i);
+    pr.textContent=vals[i-1]||(i<3?'—':'—');
+  });
+}
+
+function openHdrColor(part){
+  hdrColorTarget=part;
+  var cur=data.header['c'+part];
+  var grid=document.getElementById('hdrColorGrid');grid.innerHTML='';
+  COLORS.forEach(function(c){
+    var sw=document.createElement('button');
+    sw.className='swatch'+(c.h===cur?' selected':'');
+    sw.style.background=c.h;sw.title=c.n;
+    sw.onclick=function(){applyHdrColor(c.h);};
+    grid.appendChild(sw);
+  });
+  document.getElementById('hdrColorOverlay').classList.add('show');
+}
+
+function applyHdrColor(hex){
+  if(!hdrColorTarget)return;
+  data.header['c'+hdrColorTarget]=hex;
+  document.getElementById('hdrDot'+hdrColorTarget).style.background=hex;
+  document.getElementById('hdrPrev'+hdrColorTarget).style.color=hex;
+  closeOverlay('hdrColorOverlay');hdrColorTarget=null;
+}
+
+function saveHdr(){
+  data.header.w1=document.getElementById('hdrW1').value;
+  data.header.w2=document.getElementById('hdrW2').value;
+  data.header.w3=document.getElementById('hdrW3').value;
+  save();closeOverlay('hdrOverlay');renderHeader();
+}
+
+function overlayClick(e,id){if(e.target===document.getElementById(id))closeOverlay(id);}
+function closeOverlay(id){document.getElementById(id).classList.remove('show');}
+
+function exportData(){
+  var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='stalkiai.json';a.click();
+}
+function importData(e){
+  var f=e.target.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(ev){try{data=JSON.parse(ev.target.result);save();render();}catch{alert('Neteisingas failas');}};
+  r.readAsText(f);e.target.value='';
+}
+
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
+render();
+</script>
+</body>
+</html>
